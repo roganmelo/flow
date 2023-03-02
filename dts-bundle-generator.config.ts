@@ -1,7 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const packageJson = require('./package.json')
 
-const packageName = packageJson.name
+const packageName = packageJson.name.replace('@', '').replace('/', '-')
 
 const config = {
   entries: [
