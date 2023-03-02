@@ -1,0 +1,8 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+IS_REBASE=$(git status | grep "rebasing" | wc -l)
+
+if [ $IS_REBASE == 0 ]; then
+  exec < /dev/tty && node_modules/.bin/cz --hook || true
+fi

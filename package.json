@@ -1,19 +1,22 @@
 {
-  "name": "flow",
+  "name": "@roganmelo/flow",
   "private": true,
   "version": "0.0.1",
-  "main": "./dist/flow.cjs",
-  "module": "./dist/flow.mjs",
-  "types": "./dist/flow.d.ts",
+  "main": "./dist/roganmelo-flow.cjs",
+  "module": "./dist/roganmelo-flow.mjs",
+  "types": "./dist/roganmelo-flow.d.ts",
   "exports": {
     ".": {
-      "require": "./dist/flow.cjs",
-      "import": "./dist/flow.mjs"
+      "require": "./dist/roganmelo-flow.cjs",
+      "import": "./dist/roganmelo-flow.mjs"
     }
   },
   "engines": {
     "yarn": "You should use only NPM on this project",
     "npm": ">= 8.0.0"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/@roganmelo"
   },
   "scripts": {
     "prepare": "husky install && husky set .husky/pre-commit 'npx lint-staged' && git add .husky/pre-commit",
@@ -37,6 +40,7 @@
     "@typescript-eslint/parser": "^5.54.0",
     "@vitest/coverage-c8": "^0.29.2",
     "@vitest/ui": "^0.29.2",
+    "cz-conventional-changelog": "^3.3.0",
     "dts-bundle-generator": "^7.2.0",
     "eslint": "^8.35.0",
     "eslint-config-prettier": "^8.6.0",
