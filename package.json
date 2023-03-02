@@ -26,6 +26,7 @@
     "check-style": "prettier --check .",
     "write-style": "prettier --write .",
     "check-type": "bash -c tsc-files --noEmit",
+    "check": "npm run lint && npm run check-style && npm run check-type",
     "format": "npm run lint && npm run write-style && npm run check-type",
     "test": "vitest --passWithNoTests",
     "test-ui": "vitest --ui",
