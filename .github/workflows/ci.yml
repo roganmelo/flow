@@ -4,6 +4,8 @@ on:
     types: [opened, edited, reopened]
     branches:
       - 'main'
+    paths:
+      - '**.ts'
 jobs:
   release:
     runs-on: ubuntu-latest
