@@ -1,0 +1,34 @@
+name: CD
+on:
+  push:
+    branches:
+      - 'main'
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      matrix:
+        node: ['16.x', '15.x']
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node }}
+          registry-url: 'https://npm.pkg.github.com/'
+      - name: Installing dependencies 🔧
+        run: npm ci
+      - name: Checking style 💃
+        run: npm run check
+      - name: Testing 🧪
+        run: npm run test
+      - name: Building 🛠
+        run: npm run build
+      - name: Publishing 📦
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.REGISTRY_TOKEN }}
