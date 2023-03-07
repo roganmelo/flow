@@ -6,6 +6,11 @@ on:
       - 'main'
     paths:
       - '**.ts'
+  push:
+    branches:
+      - '!main'
+    paths:
+      - '**.ts'
 jobs:
   release:
     runs-on: ubuntu-latest
