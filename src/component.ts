@@ -1,159 +1,65 @@
+import Flow from './flow'
+import uuid from './helpers/uuid'
 import { ComponentSpec } from './spec'
+import Track from './track'
+import { Optional, Nullable } from './types'
 
-abstract class Component {
+abstract class Component<
+  ComponentSpecType extends ComponentSpec = ComponentSpec
+> {
+  protected readonly componentSpec: ComponentSpecType
+
   constructor(
-    private readonly componentSpec: ComponentSpec // private readonly flow: Flow
-  ) {}
-
-  id() {
-    return this.componentSpec.id
+    componentSpec: Optional<ComponentSpecType, 'id'>,
+    protected readonly flow: Flow
+  ) {
+    this.componentSpec = {
+      ...(componentSpec as ComponentSpecType),
+      id: componentSpec.id || uuid()
+    }
   }
 
-  spec(): ComponentSpec {
+  abstract next(): Nullable<Component> | Component[]
+
+  isEquals(componentOrComponentId: string | Component) {
+    const rawComponentId =
+      componentOrComponentId instanceof Component
+        ? componentOrComponentId.id()
+        : componentOrComponentId
+
+    return this.id() === rawComponentId
+  }
+
+  spec() {
     return this.componentSpec
   }
 
-  // index(): number {
-  //   return this.parentTrack().indexOf(this)
-  // }
+  id() {
+    return this.spec().id
+  }
 
-  // next(): Component | Nullish {
-  //   const track = this.parentTrack()
-  //   const nextInCurrentTrack = track.at(this.index() + 1)
+  track(): Track {
+    const track = this.flow.findTrack(currentTrack =>
+      currentTrack.has(this)
+    ) as Track
 
-  //   return nextInCurrentTrack
-  // }
+    return track
+  }
 
-  // prev(): Component | Nullish {
-  //   const track = this.parentTrack()
-  //   const prevInCurrentTrack = track.at(this.index() - 1)
+  parent() {
+    return this.track().parent()
+  }
 
-  //   if (prevInCurrentTrack) return prevInCurrentTrack
+  index(): number {
+    return this.track().indexOf(this)
+  }
 
-  //   const parentComponent = track.parentComponent()
+  path() {
+    const trackPath = this.track().path()
+    const index = this.index().toString()
 
-  //   if (parentComponent) return parentComponent
-
-  //   return undefined
-  // }
-
-  // path() {
-  //   return [this.parentTrack().name(), this.index()]
-  // }
-
-  // parentTrack(): Track {
-  //   const cacheId = `${this.id()}-parentTrack`
-  //   if (this.flow.cache.has(cacheId))
-  //     return this.flow.cache.get(cacheId) as Track
-
-  //   const track = this.flow.findTrack(currentTrack => {
-  //     return currentTrack.has(this)
-  //   })
-
-  //   if (!track) {
-  //     throw new Error('Parent Track does not exists')
-  //   }
-
-  //   this.flow.cache.set(cacheId, track)
-
-  //   return track
-  // }
-
-  // parentLevel(): Level {
-  //   const cacheId = `${this.id()}-parentLevel`
-  //   if (this.flow.cache.has(cacheId))
-  //     return this.flow.cache.get(cacheId) as Level
-
-  //   const parentTrack = this.parentTrack()
-
-  //   if (parentTrack instanceof Level) return parentTrack
-
-  //   const level = parentTrack.parentLevel() as Level
-
-  //   this.flow.cache.set(cacheId, level)
-
-  //   return level
-  // }
-
-  // childTracksNames(): string[] {
-  //   return []
-  // }
-
-  // tap(func: (flow: Component) => void): Component {
-  //   func(this)
-  //   return this
-  // }
-
-  // partialFlow(): FlowSpec {
-  //   return {}
-  // }
-
-  // // toFlowSpec() {
-  // //   const flow = {
-  // //     start: this.parentTrack().spec().slice(this.index())
-  // //   }
-
-  // //   return flow.start.reduce((acc, componentData) => {
-  // //     const component = new BaseComponent(componentData, this.flow)
-
-  // //     return {
-  // //       ...acc,
-  // //       ...component.partialFlow()
-  // //     }
-  // //   }, flow)
-  // // }
-
-  // // toCanvasSpec() {
-  // //   const classes = getComponentClasses(this.spec())
-  // //   const node = {
-  // //     data: {
-  // //       id: this.id()
-  // //     },
-  // //     classes
-  // //   }
-  // //   return node
-  // // }
-
-  // update(updater: (component: ComponentSpec) => ComponentSpec): Flow {
-  //   return this.flow.updateComponent(this.id(), updater)
-  // }
-
-  // remove(): Flow {
-  //   return this.flow.removeComponent(this.id())
-  // }
-
-  // disconnect(): Flow {
-  //   return this.flow.disconnectComponent(this.id())
-  // }
-
-  // connectWith(targetComponentId: string): Flow {
-  //   const targetComponent = this.flow.getComponent(targetComponentId)
-  //   if (!targetComponent) {
-  //     throw new Error('targetComponent does not exists')
-  //   }
-  //   return this.flow.connectComponent(this.id(), targetComponent.id())
-  // }
-
-  // childTracksNamesRecursively(
-  //   filterComponents?: (component: Component) => boolean
-  // ): string[] {
-  //   const childTracksNames = this.childTracksNames()
-  //   const tracks = this.flow.tracks(track =>
-  //     childTracksNames.includes(track.name())
-  //   )
-  //   return tracks.reduce((acc, currentTrack) => {
-  //     const allChildTracksRecursively = currentTrack
-  //       .components(filterComponents)
-  //       .reduce(
-  //         (acc, currentComponent) =>
-  //           acc.concat(
-  //             currentComponent.childTracksNamesRecursively(filterComponents)
-  //           ),
-  //         [] as string[]
-  //       )
-  //     return acc.concat(allChildTracksRecursively)
-  //   }, childTracksNames)
-  // }
+    return [...trackPath, index]
+  }
 }
 
 export default Component

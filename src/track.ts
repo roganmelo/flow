@@ -1,13 +1,31 @@
+import ChoiceComponent from './choice-component'
+import Component from './component'
+import Condition from './condition'
+import Execution from './execution'
+import componentFactory from './factories/component'
 import Flow from './flow'
+import Level from './level'
+import LevelComponent from './level-component'
+import ParallelComponent from './parallel-component'
 import { TrackSpec } from './spec'
-import TrackName from './track-name'
+import { Mapper, Nullable, Predicate, Reducer } from './types'
+import TrackName from './value-objects/track-name'
 
 class Track {
   constructor(
     private readonly trackSpec: TrackSpec,
-    private readonly trackName: TrackName,
+    private readonly trackName: TrackName = new TrackName(),
     private readonly flow: Flow
   ) {}
+
+  isEquals(trackOrTrackName: string | TrackName | Track) {
+    const rawTrackName =
+      trackOrTrackName instanceof Track
+        ? trackOrTrackName.name()
+        : trackOrTrackName
+
+    return this.name().isEquals(rawTrackName)
+  }
 
   spec() {
     return this.trackSpec
@@ -17,274 +35,181 @@ class Track {
     return this.trackName
   }
 
-  isStart() {
-    return this.trackName.isStart()
-  }
-
   isDisconnected() {
-    return this.trackName.isDisconnected()
+    return this.name().isDisconnected()
   }
 
-  // type() {}
+  isStart() {
+    return this.name().isStart()
+  }
 
-  // path() {
-  //   return [this.name()]
-  // }
+  isDisconnectedFromStart() {
+    return this.name().isDisconnectedFromStart()
+  }
 
-  // at(index: number): Component | Nullish {
-  //   const componentSpec = this.trackSpec[index]
-  //   if (!componentSpec) {
-  //     return undefined
-  //   }
-  //   return createComponent(this.trackSpec[index], this.flow)
-  // }
+  isFromStart() {
+    return this.name().isFromStart()
+  }
 
-  // first(): Component | Nullish {
-  //   const component = this.at(0)
+  isOnProcess() {
+    return this.name().isOnProcess()
+  }
 
-  //   return component
-  // }
+  isDisconnectedFromOnProcess() {
+    return this.name().isDisconnectedFromOnProcess()
+  }
 
-  // last(): Component {
-  //   const component = this.at(this.spec().length - 1)
-  //   if (!component) throw new Error('Component does not exist')
-  //   return component
-  // }
+  isFromOnProcess() {
+    return this.name().isFromOnProcess()
+  }
 
-  // indexOf(component: Component): number {
-  //   return this.trackSpec.findIndex(
-  //     componentSpec => componentSpec.id === component.id()
-  //   )
-  // }
+  isOnException() {
+    return this.name().isOnException()
+  }
 
-  // has(_component: string | Component): boolean {
-  //   const component =
-  //     typeof _component === 'string'
-  //       ? this.flow.getComponent(_component)
-  //       : _component
-  //   if (!component) return false
-  //   return this.indexOf(component) !== -1 ? true : false
-  // }
+  isDisconnectedFromOnException() {
+    return this.name().isDisconnectedFromOnException()
+  }
 
-  // components(predicate?: (component: Component) => boolean): Component[] {
-  //   return this.trackSpec.reduce((components, currentComponentSpec) => {
-  //     const component = createComponent(currentComponentSpec, this.flow)
-  //     if (predicate)
-  //       return predicate(component) ? components.concat(component) : components
-  //     return components.concat(component)
-  //   }, [] as Component[])
-  // }
+  isFromOnException() {
+    return this.name().isFromOnException()
+  }
 
-  // find(
-  //   predicate: (currentComponent: Component) => boolean
-  // ): Component | Nullish {
-  //   const foundComponentSpec = this.spec().find(currentComponentSpec => {
-  //     const currentComponent = createComponent(currentComponentSpec, this.flow)
-  //     return predicate(currentComponent)
-  //   })
+  isSublevel() {
+    return this.name().isSublevel()
+  }
 
-  //   return foundComponentSpec
-  //     ? createComponent(foundComponentSpec, this.flow)
-  //     : undefined
-  // }
+  isChildOf(componentOrComponentId: LevelComponent | string) {
+    const componentId =
+      componentOrComponentId instanceof LevelComponent
+        ? componentOrComponentId.id()
+        : componentOrComponentId
 
-  // parentTrack(): Track | Nullish {
-  //   // if (this.isStart()) throw new Error('Start track has no parent track')
+    return this.name().parentId() === componentId
+  }
 
-  //   if (this.isDisconnected()) {
-  //     const parentTrackName = this.name()
-  //       .split('disconnected-')[1]
-  //       .split(':')[0]
-  //       .replace('-root', '')
+  components() {
+    const components = this.trackSpec.map(componentSpec =>
+      componentFactory(componentSpec, this.flow)
+    )
 
-  //     const level = this.flow.getLevel(parentTrackName)
-  //     return level
-  //   }
+    return components
+  }
 
-  //   const track = this.flow.findTrack(currentTrack => {
-  //     const foundParentComponent = currentTrack.find(currentComponent => {
-  //       return currentComponent.childTracksNames().includes(this.name())
-  //     })
+  map<T>(mapper: Mapper<Component, T>) {
+    return this.components().map(mapper)
+  }
 
-  //     return foundParentComponent ? true : false
-  //   })
+  filter(predicate: Predicate<Component>) {
+    return this.components().filter(predicate)
+  }
 
-  //   // if (!track) throw new Error('Parent Track does not exists')
+  find(predicate: Predicate<Component>) {
+    return this.components().find(predicate)
+  }
 
-  //   return track
-  // }
+  some(predicate: Predicate<Component>) {
+    return this.components().some(predicate)
+  }
 
-  // parentLevel(track: Track = this): Level | Nullish {
-  //   const parentTrack = track.parentTrack()
+  every(predicate: Predicate<Component>) {
+    return this.components().every(predicate)
+  }
 
-  //   if (!parentTrack) return undefined
+  reduce<T>(reducer: Reducer<Component, T>, initial: T) {
+    return this.components().reduce(reducer, initial)
+  }
 
-  //   if (parentTrack instanceof Level) return parentTrack
+  has(componentOrComponentId: string | Component): boolean {
+    const id =
+      typeof componentOrComponentId !== 'string'
+        ? componentOrComponentId.id()
+        : componentOrComponentId
+    const hasComponent = this.some(
+      currentComponent => currentComponent.id() === id
+    )
 
-  //   return this.parentLevel(parentTrack)
-  // }
+    return hasComponent
+  }
 
-  // parentComponent(): Component | Nullish {
-  //   if (this.isDisconnected()) {
-  //     const regex = /^disconnected-(.+):/
-  //     const level = regex.exec(this.name())?.[1]
+  getComponent(componentId: string) {
+    const component = this.find(
+      currentComponent => currentComponent.id() === componentId
+    )
 
-  //     if (!level || level === 'start') return undefined
+    return component
+  }
 
-  //     const id = level?.replace(/-(onProcessTrack|onExceptionTrack)/, '')
-  //     const component = this.flow.getComponent(id)
+  at(index: number): Nullable<Component> {
+    return this.components()[index]
+  }
 
-  //     return component
-  //   }
+  first() {
+    return this.at(0)
+  }
 
-  //   const component = this.flow.findComponent(currentComponent => {
-  //     return currentComponent.childTracksNames().includes(this.name())
-  //   })
+  last() {
+    return this.at(this.spec().length - 1)
+  }
 
-  //   return component
-  // }
+  indexOf(component: Component) {
+    return this.components().findIndex(
+      currentComponent => currentComponent.id() === component.id()
+    )
+  }
 
-  // comesFromStart(): boolean {
-  //   const recur = (track: Track): boolean => {
-  //     if (track.isStart()) return true
-  //     if (track.isDisconnected()) return false
+  parent() {
+    const id = this.trackName.parentId()
 
-  //     const parentComponent = track.parentComponent()
-  //     const isFromBranchingComponent =
-  //       parentComponent instanceof ChoiceComponent ||
-  //       parentComponent instanceof ParallelComponent
+    if (!id) return undefined
 
-  //     if (isFromBranchingComponent) {
-  //       const branchingComponentTrack = parentComponent.parentTrack()
+    return this.flow.getComponent(id)
+  }
 
-  //       return recur(branchingComponentTrack)
-  //     }
+  type() {
+    return this.trackName.type()
+  }
 
-  //     const level = track.parentLevel()
+  path() {
+    const branchOrLevel = this.flow.reduceComponents<
+      Nullable<Condition | Execution | Level>
+    >((branch, currentComponent) => {
+      if (branch) return branch
 
-  //     if (level) return recur(level)
+      if (
+        currentComponent instanceof ChoiceComponent ||
+        currentComponent instanceof ParallelComponent
+      ) {
+        return currentComponent.branches().getByTrackName(this.name())
+      }
 
-  //     return false
-  //   }
+      if (currentComponent instanceof LevelComponent) {
+        const onProcessLevel = currentComponent.onProcessLevel()
+        const onExceptionLevel = currentComponent.onExceptionLevel()
 
-  //   return recur(this)
-  // }
+        if (this.isFromOnProcess() && onProcessLevel.isEquals(this.name())) {
+          return onProcessLevel
+        }
 
-  // branchingTracks(): Track[] {
-  //   const isBranchingComponent = (component: Component) =>
-  //     component instanceof ChoiceComponent ||
-  //     component instanceof ParallelComponent
+        if (
+          this.isFromOnException() &&
+          onExceptionLevel.isEquals(this.name())
+        ) {
+          return onExceptionLevel
+        }
+      }
 
-  //   const branchingComponent = this.find(isBranchingComponent)
+      return undefined
+    }, undefined)
 
-  //   if (branchingComponent) {
-  //     const trackNamesFromBranchingComponent =
-  //       branchingComponent.childTracksNamesRecursively(isBranchingComponent)
+    if (branchOrLevel) {
+      const branchOrLevelPath = branchOrLevel.path() as string[]
 
-  //     const tracksFromBranchingComponent = trackNamesFromBranchingComponent.map(
-  //       currentTrackName => {
-  //         return this.flow.getTrack(currentTrackName)
-  //       }
-  //     )
+      return [...branchOrLevelPath, this.name().toString()]
+    }
 
-  //     return tracksFromBranchingComponent
-  //   }
-
-  //   return []
-  // }
-
-  // partialFlow(
-  //   trackName: string = this.name(),
-  //   withDisconnected = false,
-  //   asDisconnected = false
-  // ): FlowSpec {
-  //   const track = this.spec()
-
-  //   const _trackName = asDisconnected
-  //     ? `disconnected-root:${uuid()}`
-  //     : trackName
-
-  //   const flowSpec: FlowSpec = {
-  //     [_trackName]: track
-  //   }
-
-  //   const partialFlow = track.reduce((acc, currentComponentSpec) => {
-  //     const component = createComponent(currentComponentSpec, this.flow)
-
-  //     return {
-  //       ...acc,
-  //       ...component.partialFlow(withDisconnected)
-  //     }
-  //   }, flowSpec)
-
-  //   if (withDisconnected && this instanceof Level) {
-  //     const disconnected = this.disconnectedTracks().reduce(
-  //       (acc, disconnectedTrack) => {
-  //         return {
-  //           ...acc,
-  //           ...disconnectedTrack.partialFlow(
-  //             asDisconnected
-  //               ? `disconnected-root:${uuid()}`
-  //               : `disconnected-${trackName}:${uuid()}`,
-  //             withDisconnected
-  //           )
-  //         }
-  //       },
-  //       {}
-  //     )
-
-  //     return track.length > 0
-  //       ? { ...partialFlow, ...disconnected }
-  //       : disconnected
-  //   }
-
-  //   if (track.length === 0) return {}
-
-  //   return partialFlow
-  // }
-
-  // toFlowSpec() {
-  //   return this.partialFlow('start')
-  // }
-
-  // toCanvasSpec(): CanvasSpec {
-  //   const mainTrackCanvasSpec = this.components().reduce(
-  //     (canvasSpec, currentComponent) => {
-  //       const node = currentComponent.toCanvasSpec()
-  //       const previousComponent = currentComponent.prev()
-
-  //       if (!previousComponent || previousComponent instanceof LevelComponent) {
-  //         return [...canvasSpec, node]
-  //       }
-
-  //       const edge = {
-  //         data: {
-  //           source: previousComponent.id(),
-  //           target: currentComponent.id(),
-  //           id: uuid()
-  //         }
-  //       }
-
-  //       return [...canvasSpec, node, edge]
-  //     },
-  //     [] as CanvasSpec
-  //   )
-
-  //   const branchingTracksCanvasSpec = this.branchingTracks().reduce(
-  //     (canvasSpec, currentTrack) => {
-  //       return canvasSpec.concat(currentTrack.toCanvasSpec())
-  //     },
-  //     [] as CanvasSpec
-  //   )
-
-  //   return [...mainTrackCanvasSpec, ...branchingTracksCanvasSpec]
-  // }
-
-  // tap(func: (flow: Track) => void): Track {
-  //   func(this)
-  //   return this
-  // }
+    return [this.name().toString()]
+  }
 }
 
-export { TrackName }
 export default Track
