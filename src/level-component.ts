@@ -3,8 +3,8 @@ import Flow from './flow'
 import Level from './level'
 import { FlowSpec, LevelComponentSpec, LevelTypes } from './spec'
 import Track from './track'
+import TrackName from './track-name'
 import { Nullable } from './types'
-import TrackName from './value-objects/track-name'
 
 class LevelComponent extends Component<LevelComponentSpec> {
   constructor(spec: LevelComponentSpec, flow: Flow) {

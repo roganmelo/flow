@@ -26,7 +26,8 @@
     "allowSyntheticDefaultImports": true,
     "declaration": true,
     "skipLibCheck": false,
-    "incremental": true
+    "incremental": true,
+    "experimentalDecorators": true
   },
   "include": ["vite.config.ts", "src/**/*.ts"],
   "exclude": ["node_modules", "test/**", "dist"]

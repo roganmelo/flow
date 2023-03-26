@@ -3,7 +3,7 @@ import Branches from './branches'
 import Component from './component'
 import Flow from './flow'
 import { BranchSpec, ComponentSpec } from './spec'
-import TrackName from './value-objects/track-name'
+import TrackName from './track-name'
 
 abstract class BranchingComponent<
   SpecType extends ComponentSpec,
