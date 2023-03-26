@@ -158,8 +158,8 @@ class Track {
     )
   }
 
-  parent() {
-    const id = this.trackName.parentId()
+  parent(): Nullable<Component> {
+    const id = this.name().parentId()
 
     if (!id) return undefined
 

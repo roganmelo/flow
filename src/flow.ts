@@ -19,9 +19,9 @@ class Flow {
 
   levels() {
     const startLevel = this.startLevel()
-    const levelComponents = this.filterComponents(
+    const levelComponents = this.filterComponents<LevelComponent>(
       currentComponent => currentComponent instanceof LevelComponent
-    ) as LevelComponent[]
+    )
     const subLevels = levelComponents.reduce<Level[]>(
       (accSubLevels, currentLevelComponent) => {
         const onProcessLevel = currentLevelComponent.onProcessLevel()
@@ -84,20 +84,16 @@ class Flow {
   }
 
   hasLevel(levelOrLevelName: string | Level | TrackName) {
-    const hasLevel = this.someLevel(currentLevel => {
-      if (levelOrLevelName instanceof Level) {
-        return currentLevel.name().isEquals(levelOrLevelName.name())
-      }
-
-      return currentLevel.name().isEquals(levelOrLevelName)
-    })
+    const hasLevel = this.someLevel(currentLevel =>
+      currentLevel.isEquals(levelOrLevelName)
+    )
 
     return hasLevel
   }
 
   getLevel(levelName: string | TrackName) {
     const level = this.findLevel(currentLevel =>
-      currentLevel.name().isEquals(levelName)
+      currentLevel.isEquals(levelName)
     )
 
     return level
@@ -130,20 +126,16 @@ class Flow {
   // Tracks
 
   hasTrack(trackOrTrackName: string | Track | TrackName) {
-    const hasTrack = this.someTrack(currentTrack => {
-      if (trackOrTrackName instanceof Track) {
-        return currentTrack.name().isEquals(trackOrTrackName.name())
-      }
-
-      return currentTrack.name().isEquals(trackOrTrackName)
-    })
+    const hasTrack = this.someTrack(currentTrack =>
+      currentTrack.isEquals(trackOrTrackName)
+    )
 
     return hasTrack
   }
 
   getTrack(trackName: string | TrackName) {
     const track = this.findTrack(currentTrack =>
-      currentTrack.name().isEquals(trackName)
+      currentTrack.isEquals(trackName)
     )
 
     return track
@@ -182,8 +174,8 @@ class Flow {
   }
 
   getComponent<T extends Component = Component>(componentId: string) {
-    return this.findComponent<T>(
-      currentComponent => currentComponent.id() === componentId
+    return this.findComponent<T>(currentComponent =>
+      currentComponent.isEquals(componentId)
     )
   }
 
