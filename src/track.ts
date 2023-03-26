@@ -8,8 +8,8 @@ import Level from './level'
 import LevelComponent from './level-component'
 import ParallelComponent from './parallel-component'
 import { TrackSpec } from './spec'
+import TrackName from './track-name'
 import { Mapper, Nullable, Predicate, Reducer } from './types'
-import TrackName from './value-objects/track-name'
 
 class Track {
   constructor(
@@ -170,45 +170,50 @@ class Track {
     return this.trackName.type()
   }
 
+  level() {
+    const parent = this.parent()
+
+    if (!parent) return this.flow.startLevel()
+
+    const level = this.flow.findLevel(level => {
+      const levelParent = level.parent()
+
+      if (!levelParent) return false
+
+      return parent.isEquals(levelParent) && this.type() === level.type()
+    }) as Level
+
+    return level
+  }
+
   path() {
-    const branchOrLevel = this.flow.reduceComponents<
+    const branch = this.flow.reduceComponents<
       Nullable<Condition | Execution | Level>
     >((branch, currentComponent) => {
       if (branch) return branch
 
-      if (
+      const isParallelOrChoice =
         currentComponent instanceof ChoiceComponent ||
         currentComponent instanceof ParallelComponent
-      ) {
+
+      if (isParallelOrChoice) {
         return currentComponent.branches().getByTrackName(this.name())
-      }
-
-      if (currentComponent instanceof LevelComponent) {
-        const onProcessLevel = currentComponent.onProcessLevel()
-        const onExceptionLevel = currentComponent.onExceptionLevel()
-
-        if (this.isFromOnProcess() && onProcessLevel.isEquals(this.name())) {
-          return onProcessLevel
-        }
-
-        if (
-          this.isFromOnException() &&
-          onExceptionLevel.isEquals(this.name())
-        ) {
-          return onExceptionLevel
-        }
       }
 
       return undefined
     }, undefined)
 
-    if (branchOrLevel) {
-      const branchOrLevelPath = branchOrLevel.path() as string[]
+    const name = this.name().toString()
 
-      return [...branchOrLevelPath, this.name().toString()]
+    if (branch) {
+      const branchPath = branch.path() as string[]
+
+      return [...branchPath, name]
     }
 
-    return [this.name().toString()]
+    const levelPath = this.level().path() as string[]
+
+    return [...levelPath, name]
   }
 }
 

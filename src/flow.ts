@@ -3,10 +3,15 @@ import Level from './level'
 import LevelComponent from './level-component'
 import { FlowSpec, LevelTypes } from './spec'
 import Track from './track'
+import TrackName from './track-name'
 import { Mapper, Predicate, Reducer } from './types'
-import TrackName from './value-objects/track-name'
 
 class Flow {
+  // private readonly cache = new Map<
+  //   string,
+  //   Nullable<Component | Track | Level>
+  // >()
+
   constructor(private readonly flowSpec: FlowSpec) {}
 
   spec() {
@@ -14,7 +19,7 @@ class Flow {
   }
 
   tracksNames() {
-    return Object.keys(this.flowSpec)
+    return Object.keys(this.spec())
   }
 
   levels() {
@@ -40,7 +45,7 @@ class Flow {
     const tracks = tracksNames.map(
       currentTrackName =>
         new Track(
-          this.flowSpec[currentTrackName],
+          this.spec()[currentTrackName],
           new TrackName(currentTrackName),
           this
         )

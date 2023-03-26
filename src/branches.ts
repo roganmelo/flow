@@ -2,8 +2,8 @@ import Branch from './branch'
 import Component from './component'
 import Flow from './flow'
 import { BranchSpec } from './spec'
+import TrackName from './track-name'
 import { Mapper, Nullable, Predicate, Reducer } from './types'
-import TrackName from './value-objects/track-name'
 
 abstract class Branches<
   BranchSpecType extends BranchSpec,
