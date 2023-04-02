@@ -1,4 +1,19 @@
 - Mutations
+  - Flow
+    - Update
+    - Connect
+    - Disconnect
+    - Remove
+  - Track
+    - Update
+    - Connect
+    - Disconnect
+    - Remove
+  - Component
+    - Update
+    - Connect
+    - Disconnect
+    - Remove
 - Cache (decorator)
 - Clone
 - Tests
@@ -6,6 +21,7 @@
   - To flow spec
   - To cyto spec (adapter)
 - Level
+  - DisconnectedTracks
   - To flow spec
   - To cyto spec (adapter)
 - Component
@@ -23,4 +39,5 @@
   - To flow spec
   - To cyto spec (adapter)
 - Flow
+  - DisconnectedTracks
   - To cyto spec (adapter)

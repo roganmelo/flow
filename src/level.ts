@@ -182,7 +182,7 @@ class Level {
   findComponent<T extends Component = Component>(
     predicate: Predicate<Component>
   ) {
-    return this.components().find(predicate) as T
+    return this.components().find(predicate) as Nullable<T>
   }
 
   someComponent(predicate: Predicate<Component>) {
