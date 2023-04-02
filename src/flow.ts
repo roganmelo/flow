@@ -1,17 +1,13 @@
 import Component from './component'
+// import cache from './helpers/cache'
 import Level from './level'
 import LevelComponent from './level-component'
 import { FlowSpec, LevelTypes } from './spec'
 import Track from './track'
 import TrackName from './track-name'
-import { Mapper, Predicate, Reducer } from './types'
+import { Mapper, Nullable, Predicate, Reducer } from './types'
 
 class Flow {
-  // private readonly cache = new Map<
-  //   string,
-  //   Nullable<Component | Track | Level>
-  // >()
-
   constructor(private readonly flowSpec: FlowSpec) {}
 
   spec() {
@@ -70,6 +66,7 @@ class Flow {
 
   // Levels
 
+  // @cache('start-level')
   startLevel() {
     const startLevelSpec = this.reduceTracks<FlowSpec>(
       (accTracks, currentTrack) => {
@@ -96,6 +93,7 @@ class Flow {
     return hasLevel
   }
 
+  // @cache('{0}-get-level')
   getLevel(levelName: string | TrackName) {
     const level = this.findLevel(currentLevel =>
       currentLevel.isEquals(levelName)
@@ -138,6 +136,7 @@ class Flow {
     return hasTrack
   }
 
+  // @cache('{0}-get-track')
   getTrack(trackName: string | TrackName) {
     const track = this.findTrack(currentTrack =>
       currentTrack.isEquals(trackName)
@@ -178,6 +177,7 @@ class Flow {
     )
   }
 
+  // @cache('{0}-get-component')
   getComponent<T extends Component = Component>(componentId: string) {
     return this.findComponent<T>(currentComponent =>
       currentComponent.isEquals(componentId)
@@ -197,7 +197,7 @@ class Flow {
   findComponent<T extends Component = Component>(
     predicate: Predicate<Component>
   ) {
-    return this.components().find(predicate) as T
+    return this.components().find(predicate) as Nullable<T>
   }
 
   someComponent(predicate: Predicate<Component>) {

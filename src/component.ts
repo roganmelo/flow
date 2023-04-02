@@ -1,5 +1,7 @@
+import ChoiceComponent from './choice-component'
 import Flow from './flow'
 import uuid from './helpers/uuid'
+import ParallelComponent from './parallel-component'
 import { ComponentSpec } from './spec'
 import Track from './track'
 import { Optional, Nullable } from './types'
@@ -20,6 +22,33 @@ abstract class Component<
   }
 
   abstract next(): Nullable<Component> | Component[]
+
+  prev(): Nullable<Component> {
+    const track = this.track()
+    const prevComponent = track.at(this.index() - 1)
+
+    if (prevComponent) return prevComponent
+
+    const branchingComponent = this.flow.findComponent(currentComponent => {
+      const isParallelOrChoice =
+        currentComponent instanceof ChoiceComponent ||
+        currentComponent instanceof ParallelComponent
+
+      if (isParallelOrChoice) {
+        const hasBranch = !!currentComponent
+          .branches()
+          .getByTrackName(track.name())
+
+        return hasBranch
+      }
+
+      return false
+    })
+
+    if (branchingComponent) return branchingComponent
+
+    return this.parent()?.prev()
+  }
 
   isEquals(componentOrComponentId: string | Component) {
     const rawComponentId =
@@ -44,6 +73,10 @@ abstract class Component<
     ) as Track
 
     return track
+  }
+
+  level() {
+    return this.track().level()
   }
 
   parent() {

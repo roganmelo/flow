@@ -104,8 +104,8 @@ class Track {
     return this.components().filter(predicate)
   }
 
-  find(predicate: Predicate<Component>) {
-    return this.components().find(predicate)
+  find<T extends Component = Component>(predicate: Predicate<Component>) {
+    return this.components().find(predicate) as Nullable<T>
   }
 
   some(predicate: Predicate<Component>) {
