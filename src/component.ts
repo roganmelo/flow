@@ -29,7 +29,7 @@ abstract class Component<
 
     if (prevComponent) return prevComponent
 
-    const branchingComponent = this.flow.findComponent(currentComponent => {
+    const branchingComponent = this.flow.components().find(currentComponent => {
       const isParallelOrChoice =
         currentComponent instanceof ChoiceComponent ||
         currentComponent instanceof ParallelComponent
@@ -68,9 +68,9 @@ abstract class Component<
   }
 
   track(): Track {
-    const track = this.flow.findTrack(currentTrack =>
-      currentTrack.has(this)
-    ) as Track
+    const track = this.flow
+      .tracks()
+      .find(currentTrack => currentTrack.has(this)) as Track
 
     return track
   }
@@ -93,6 +93,14 @@ abstract class Component<
 
     return [...trackPath, index]
   }
+
+  // Mutations
+
+  // abstract connect(to: Component | TrackName | Track): Flow
+
+  // abstract disconnect(from?: Component | TrackName | Track): Flow
+
+  // abstract remove(): Flow
 }
 
 export default Component

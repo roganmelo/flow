@@ -25,7 +25,9 @@ class ParallelComponent extends BranchingComponent<
   }
 
   branchesTargetsNames() {
-    return this.branches().map(branch => branch.targetTrack().name())
+    return this.branches()
+      .all()
+      .map(branch => branch.targetTrack().name())
   }
 
   executions() {
@@ -37,14 +39,13 @@ class ParallelComponent extends BranchingComponent<
   }
 
   next() {
-    const targetComponents = this.executions().reduce<Component[]>(
-      (acc, execution) => {
+    const targetComponents = this.executions()
+      .all()
+      .reduce<Component[]>((acc, execution) => {
         const firstComponent = execution.targetTrack().first()
 
         return firstComponent ? [...acc, firstComponent] : acc
-      },
-      []
-    )
+      }, [])
 
     return targetComponents
   }

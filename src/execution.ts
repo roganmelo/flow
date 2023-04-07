@@ -29,8 +29,7 @@ class Execution extends Branch<ExecutionSpec> {
     const parallelPath = this.parallel().path()
     const index = this.index().toString()
 
-    // return [...parallelPath, 'params', 'parallelExecutions', index]
-    return [...parallelPath, index]
+    return [...parallelPath, 'params', 'parallelExecutions', index]
   }
 }
 

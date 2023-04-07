@@ -1,3 +1,6 @@
+// import lodashOmit from 'lodash.omit'
+// import lodashUpdate from 'lodash.update'
+
 import Component from './component'
 // import cache from './helpers/cache'
 import Level from './level'
@@ -5,7 +8,7 @@ import LevelComponent from './level-component'
 import { FlowSpec, LevelTypes } from './spec'
 import Track from './track'
 import TrackName from './track-name'
-import { Mapper, Nullable, Predicate, Reducer } from './types'
+import { Nullable } from './types'
 
 class Flow {
   constructor(private readonly flowSpec: FlowSpec) {}
@@ -20,9 +23,9 @@ class Flow {
 
   levels() {
     const startLevel = this.startLevel()
-    const levelComponents = this.filterComponents<LevelComponent>(
+    const levelComponents = this.components().filter(
       currentComponent => currentComponent instanceof LevelComponent
-    )
+    ) as LevelComponent[]
     const subLevels = levelComponents.reduce<Level[]>(
       (accSubLevels, currentLevelComponent) => {
         const onProcessLevel = currentLevelComponent.onProcessLevel()
@@ -42,7 +45,7 @@ class Flow {
       currentTrackName =>
         new Track(
           this.spec()[currentTrackName],
-          new TrackName(currentTrackName),
+          new TrackName({ id: currentTrackName }),
           this
         )
     )
@@ -68,7 +71,7 @@ class Flow {
 
   // @cache('start-level')
   startLevel() {
-    const startLevelSpec = this.reduceTracks<FlowSpec>(
+    const startLevelSpec = this.tracks().reduce<FlowSpec>(
       (accTracks, currentTrack) => {
         if (currentTrack.isFromStart()) {
           return {
@@ -86,7 +89,7 @@ class Flow {
   }
 
   hasLevel(levelOrLevelName: string | Level | TrackName) {
-    const hasLevel = this.someLevel(currentLevel =>
+    const hasLevel = this.levels().some(currentLevel =>
       currentLevel.isEquals(levelOrLevelName)
     )
 
@@ -95,41 +98,17 @@ class Flow {
 
   // @cache('{0}-get-level')
   getLevel(levelName: string | TrackName) {
-    const level = this.findLevel(currentLevel =>
+    const level = this.levels().find(currentLevel =>
       currentLevel.isEquals(levelName)
     )
 
     return level
   }
 
-  mapLevels<T>(mapper: Mapper<Level, T>) {
-    return this.levels().map(mapper)
-  }
-
-  filterLevels(predicate: Predicate<Level>) {
-    return this.levels().filter(predicate)
-  }
-
-  findLevel(predicate: Predicate<Level>) {
-    return this.levels().find(predicate)
-  }
-
-  someLevel(predicate: Predicate<Level>) {
-    return this.levels().some(predicate)
-  }
-
-  everyLevel(predicate: Predicate<Level>) {
-    return this.levels().every(predicate)
-  }
-
-  reduceLevels<T>(reducer: Reducer<Level, T>, initial: T) {
-    return this.levels().reduce(reducer, initial)
-  }
-
   // Tracks
 
   hasTrack(trackOrTrackName: string | Track | TrackName) {
-    const hasTrack = this.someTrack(currentTrack =>
+    const hasTrack = this.tracks().some(currentTrack =>
       currentTrack.isEquals(trackOrTrackName)
     )
 
@@ -138,35 +117,11 @@ class Flow {
 
   // @cache('{0}-get-track')
   getTrack(trackName: string | TrackName) {
-    const track = this.findTrack(currentTrack =>
+    const track = this.tracks().find(currentTrack =>
       currentTrack.isEquals(trackName)
     )
 
     return track
-  }
-
-  mapTracks<T>(mapper: Mapper<Track, T>) {
-    return this.tracks().map(mapper)
-  }
-
-  filterTracks(predicate: Predicate<Track>) {
-    return this.tracks().filter(predicate)
-  }
-
-  findTrack(predicate: Predicate<Track>) {
-    return this.tracks().find(predicate)
-  }
-
-  someTrack(predicate: Predicate<Track>) {
-    return this.tracks().some(predicate)
-  }
-
-  everyTrack(predicate: Predicate<Track>) {
-    return this.tracks().every(predicate)
-  }
-
-  reduceTracks<T>(reducer: Reducer<Track, T>, initial: T) {
-    return this.tracks().reduce(reducer, initial)
   }
 
   // Components
@@ -179,38 +134,26 @@ class Flow {
 
   // @cache('{0}-get-component')
   getComponent<T extends Component = Component>(componentId: string) {
-    return this.findComponent<T>(currentComponent =>
+    return this.components().find(currentComponent =>
       currentComponent.isEquals(componentId)
-    )
+    ) as Nullable<T>
   }
 
-  mapComponents<T>(mapper: Mapper<Component, T>) {
-    return this.components().map(mapper)
-  }
+  // Mutations
 
-  filterComponents<T extends Component = Component>(
-    predicate: Predicate<Component>
-  ) {
-    return this.components().filter(predicate) as T[]
-  }
+  // update<T>(path: string[], updater: (value: T) => T): Flow {
+  //   const flowSpecClone = structuredClone(this.spec())
+  //   const updatedFlowSpec = lodashUpdate(flowSpecClone, path, updater)
 
-  findComponent<T extends Component = Component>(
-    predicate: Predicate<Component>
-  ) {
-    return this.components().find(predicate) as Nullable<T>
-  }
+  //   return new Flow(updatedFlowSpec)
+  // }
 
-  someComponent(predicate: Predicate<Component>) {
-    return this.components().some(predicate)
-  }
+  // remove(path: string[]) {
+  //   const flowSpecClone = structuredClone(this.spec())
+  //   const updatedFlowSpec = lodashOmit(flowSpecClone, path)
 
-  everyComponent(predicate: Predicate<Component>) {
-    return this.components().every(predicate)
-  }
-
-  reduceComponents<T>(reducer: Reducer<Component, T>, initial: T) {
-    return this.components().reduce(reducer, initial)
-  }
+  //   return new Flow(updatedFlowSpec)
+  // }
 }
 
 export default Flow

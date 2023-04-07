@@ -16,11 +16,11 @@ class LevelComponent extends Component<LevelComponentSpec> {
   }
 
   onProcessTrackName() {
-    return new TrackName(this.spec().params.onProcess)
+    return new TrackName({ id: this.spec().params.onProcess })
   }
 
   onExceptionTrackName() {
-    return new TrackName(this.spec().params.onException)
+    return new TrackName({ id: this.spec().params.onException })
   }
 
   onProcessTrack() {
@@ -32,8 +32,9 @@ class LevelComponent extends Component<LevelComponentSpec> {
   }
 
   onProcessLevel() {
-    const levelSpec = this.flow.reduceTracks<FlowSpec>(
-      (accLevelSpec, currentTrack) => {
+    const levelSpec = this.flow
+      .tracks()
+      .reduce<FlowSpec>((accLevelSpec, currentTrack) => {
         if (currentTrack.isChildOf(this) && currentTrack.isFromOnProcess()) {
           return {
             ...accLevelSpec,
@@ -42,16 +43,15 @@ class LevelComponent extends Component<LevelComponentSpec> {
         }
 
         return accLevelSpec
-      },
-      {}
-    )
+      }, {})
 
     return new Level(levelSpec, LevelTypes.OnProcess, this, this.flow)
   }
 
   onExceptionLevel() {
-    const levelSpec = this.flow.reduceTracks<FlowSpec>(
-      (accLevelSpec, currentTrack) => {
+    const levelSpec = this.flow
+      .tracks()
+      .reduce<FlowSpec>((accLevelSpec, currentTrack) => {
         if (currentTrack.isChildOf(this) && currentTrack.isFromOnException()) {
           return {
             ...accLevelSpec,
@@ -60,9 +60,7 @@ class LevelComponent extends Component<LevelComponentSpec> {
         }
 
         return accLevelSpec
-      },
-      {}
-    )
+      }, {})
 
     return new Level(levelSpec, LevelTypes.OnException, this, this.flow)
   }

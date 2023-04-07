@@ -4,7 +4,7 @@ import LevelComponent from './level-component'
 import { FlowSpec, LevelTypes } from './spec'
 import Track from './track'
 import TrackName from './track-name'
-import { Mapper, Nullable, Predicate, Reducer } from './types'
+import { Nullable } from './types'
 
 class Level {
   private readonly levelName: TrackName
@@ -16,7 +16,7 @@ class Level {
     private readonly flow: Flow
   ) {
     if (levelType === LevelTypes.Start) {
-      this.levelName = new TrackName(LevelTypes.Start)
+      this.levelName = new TrackName({ id: LevelTypes.Start })
     } else {
       if (!parentComponent) {
         throw new Error(
@@ -27,7 +27,7 @@ class Level {
       const parentComponentId = parentComponent.id()
       const levelName = `${parentComponentId}-${levelType}Track`
 
-      this.levelName = new TrackName(levelName)
+      this.levelName = new TrackName({ id: levelName })
     }
   }
 
@@ -89,7 +89,7 @@ class Level {
       currentTrackName =>
         new Track(
           this.spec()[currentTrackName],
-          new TrackName(currentTrackName),
+          new TrackName({ id: currentTrackName }),
           this.flow
         )
     )
@@ -101,8 +101,12 @@ class Level {
     return this.getTrack(this.name()) as Track
   }
 
+  disconnectedTracks() {
+    return this.tracks().filter(track => track.isDisconnected())
+  }
+
   hasTrack(trackOrTrackName: string | Track | TrackName) {
-    const hasTrack = this.someTrack(currentTrack =>
+    const hasTrack = this.tracks().some(currentTrack =>
       currentTrack.isEquals(trackOrTrackName)
     )
 
@@ -110,35 +114,11 @@ class Level {
   }
 
   getTrack(trackName: string | TrackName) {
-    const track = this.findTrack(currentTrack =>
+    const track = this.tracks().find(currentTrack =>
       currentTrack.isEquals(trackName)
     )
 
     return track
-  }
-
-  mapTracks<T>(mapper: Mapper<Track, T>) {
-    return this.tracks().map(mapper)
-  }
-
-  filterTracks(predicate: Predicate<Track>) {
-    return this.tracks().filter(predicate)
-  }
-
-  findTrack(predicate: Predicate<Track>) {
-    return this.tracks().find(predicate)
-  }
-
-  someTrack(predicate: Predicate<Track>) {
-    return this.tracks().some(predicate)
-  }
-
-  everyTrack(predicate: Predicate<Track>) {
-    return this.tracks().every(predicate)
-  }
-
-  reduceTracks<T>(reducer: Reducer<Track, T>, initial: T) {
-    return this.tracks().reduce(reducer, initial)
   }
 
   // Components
@@ -164,37 +144,9 @@ class Level {
   }
 
   getComponent<T extends Component = Component>(componentId: string) {
-    return this.findComponent<T>(currentComponent =>
+    return this.components().find(currentComponent =>
       currentComponent.isEquals(componentId)
-    )
-  }
-
-  mapComponents<T>(mapper: Mapper<Component, T>) {
-    return this.components().map(mapper)
-  }
-
-  filterComponents<T extends Component = Component>(
-    predicate: Predicate<Component>
-  ) {
-    return this.components().filter(predicate) as T[]
-  }
-
-  findComponent<T extends Component = Component>(
-    predicate: Predicate<Component>
-  ) {
-    return this.components().find(predicate) as Nullable<T>
-  }
-
-  someComponent(predicate: Predicate<Component>) {
-    return this.components().some(predicate)
-  }
-
-  everyComponent(predicate: Predicate<Component>) {
-    return this.components().every(predicate)
-  }
-
-  reduceComponents<T>(reducer: Reducer<Component, T>, initial: T) {
-    return this.components().reduce(reducer, initial)
+    ) as Nullable<T>
   }
 }
 

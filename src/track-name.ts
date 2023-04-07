@@ -1,6 +1,12 @@
 import uuid from 'src/helpers/uuid'
 import { LevelTypes } from 'src/spec'
 
+type Options = {
+  id?: string
+  isDisconnected?: boolean
+  levelName?: string
+}
+
 class TrackName {
   static disconnectedRegex = /^disconnected-/
   static startTrackRegex = new RegExp(`^${LevelTypes.Start}$`)
@@ -24,8 +30,11 @@ class TrackName {
 
   private readonly id: string
 
-  constructor(id?: string) {
-    this.id = id || `disconnected-start:${uuid()}`
+  constructor({ id, isDisconnected, levelName }: Options) {
+    const disconnectedPrefix = isDisconnected ? 'disconnected' : ''
+    const level = levelName || LevelTypes.Start
+
+    this.id = id || `${disconnectedPrefix}-${level}:${uuid()}`
   }
 
   isEquals(trackName: string | TrackName) {

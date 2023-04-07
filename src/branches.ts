@@ -3,7 +3,7 @@ import Component from './component'
 import Flow from './flow'
 import { BranchSpec } from './spec'
 import TrackName from './track-name'
-import { Mapper, Nullable, Predicate, Reducer } from './types'
+import { Nullable } from './types'
 
 abstract class Branches<
   BranchSpecType extends BranchSpec,
@@ -41,32 +41,10 @@ abstract class Branches<
     return this.at(this.all().length - 1)
   }
 
-  map<T>(mapper: Mapper<BranchType, T>) {
-    return this.all().map(mapper)
-  }
-
-  filter(predicate: Predicate<BranchType>) {
-    return this.all().filter(predicate)
-  }
-
-  find(predicate: Predicate<BranchType>) {
-    return this.all().find(predicate)
-  }
-
-  some(predicate: Predicate<BranchType>) {
-    return this.all().some(predicate)
-  }
-
-  every(predicate: Predicate<BranchType>) {
-    return this.all().every(predicate)
-  }
-
-  reduce<T>(reducer: Reducer<BranchType, T>, initial: T) {
-    return this.all().reduce(reducer, initial)
-  }
-
   getByTrackName(trackName: string | TrackName) {
-    return this.find(branch => branch.targetTrack().name().isEquals(trackName))
+    return this.all().find(branch =>
+      branch.targetTrack().name().isEquals(trackName)
+    )
   }
 }
 

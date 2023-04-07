@@ -9,12 +9,12 @@ import LevelComponent from './level-component'
 import ParallelComponent from './parallel-component'
 import { TrackSpec } from './spec'
 import TrackName from './track-name'
-import { Mapper, Nullable, Predicate, Reducer } from './types'
+import { Nullable } from './types'
 
 class Track {
   constructor(
     private readonly trackSpec: TrackSpec,
-    private readonly trackName: TrackName = new TrackName(),
+    private readonly trackName: TrackName,
     private readonly flow: Flow
   ) {}
 
@@ -96,36 +96,12 @@ class Track {
     return components
   }
 
-  map<T>(mapper: Mapper<Component, T>) {
-    return this.components().map(mapper)
-  }
-
-  filter(predicate: Predicate<Component>) {
-    return this.components().filter(predicate)
-  }
-
-  find<T extends Component = Component>(predicate: Predicate<Component>) {
-    return this.components().find(predicate) as Nullable<T>
-  }
-
-  some(predicate: Predicate<Component>) {
-    return this.components().some(predicate)
-  }
-
-  every(predicate: Predicate<Component>) {
-    return this.components().every(predicate)
-  }
-
-  reduce<T>(reducer: Reducer<Component, T>, initial: T) {
-    return this.components().reduce(reducer, initial)
-  }
-
   has(componentOrComponentId: string | Component): boolean {
     const id =
       typeof componentOrComponentId !== 'string'
         ? componentOrComponentId.id()
         : componentOrComponentId
-    const hasComponent = this.some(
+    const hasComponent = this.components().some(
       currentComponent => currentComponent.id() === id
     )
 
@@ -133,7 +109,7 @@ class Track {
   }
 
   getComponent(componentId: string) {
-    const component = this.find(
+    const component = this.components().find(
       currentComponent => currentComponent.id() === componentId
     )
 
@@ -175,7 +151,7 @@ class Track {
 
     if (!parent) return this.flow.startLevel()
 
-    const level = this.flow.findLevel(level => {
+    const level = this.flow.levels().find(level => {
       const levelParent = level.parent()
 
       if (!levelParent) return false
@@ -187,21 +163,24 @@ class Track {
   }
 
   path() {
-    const branch = this.flow.reduceComponents<
-      Nullable<Condition | Execution | Level>
-    >((branch, currentComponent) => {
-      if (branch) return branch
+    const branch = this.flow
+      .components()
+      .reduce<Nullable<Condition | Execution | Level>>(
+        (branch, currentComponent) => {
+          if (branch) return branch
 
-      const isParallelOrChoice =
-        currentComponent instanceof ChoiceComponent ||
-        currentComponent instanceof ParallelComponent
+          const isParallelOrChoice =
+            currentComponent instanceof ChoiceComponent ||
+            currentComponent instanceof ParallelComponent
 
-      if (isParallelOrChoice) {
-        return currentComponent.branches().getByTrackName(this.name())
-      }
+          if (isParallelOrChoice) {
+            return currentComponent.branches().getByTrackName(this.name())
+          }
 
-      return undefined
-    }, undefined)
+          return undefined
+        },
+        undefined
+      )
 
     const name = this.name().toString()
 
@@ -215,6 +194,69 @@ class Track {
 
     return [...levelPath, name]
   }
+
+  // Mutations
+
+  // addComponents(components: Component[]) {
+  //   const componentsSpecs = components.map(currentComponent =>
+  //     currentComponent.spec()
+  //   )
+
+  //   return this.flow.update(this.path(), (trackSpec: TrackSpec) => [
+  //     ...trackSpec,
+  //     ...componentsSpecs
+  //   ])
+  // }
+
+  // removeComponents(components: Component[]) {
+  //   const componentsIds = components.map(currentComponent =>
+  //     currentComponent.id()
+  //   )
+  //   const updater = (trackSpec: TrackSpec) =>
+  //     trackSpec.filter(
+  //       currentComponent => !componentsIds.includes(currentComponent.id)
+  //     )
+
+  //   return this.flow.update(this.path(), updater)
+  // }
+
+  // remove() {
+  //   return this.flow.remove(this.path())
+  // }
+
+  // connect(to: Component | TrackName | Track) {
+  //   if (to instanceof Component) {
+  //     return this.addComponents([to]).remove(to.track().path())
+  //   }
+
+  //   if (to instanceof TrackName) {
+  //     const track = this.flow.getTrack(to)
+
+  //     if (!track) {
+  //       throw new Error(`Track with track name ${to} does not exists.`)
+  //     }
+
+  //     return this.addComponents(track.components()).remove(track.path())
+  //   }
+
+  //   return this.addComponents(to.components()).remove(to.path())
+  // }
+
+  // disconnect(from: Component) {
+  //   const componentIndex = from.index()
+  //   const trackSpec = this.spec()
+  //   const newTrackSpec = trackSpec.slice(0, componentIndex)
+  //   const disconnectedTrackSpec = trackSpec.slice(componentIndex)
+  //   const levelName = this.level().name().toString()
+  //   const disconnectedTrackName = new TrackName({
+  //     isDisconnected: true,
+  //     levelName
+  //   })
+
+  //   return this.flow
+  //     .update(this.path(), () => newTrackSpec)
+  //     .update([disconnectedTrackName.toString()], () => disconnectedTrackSpec)
+  // }
 }
 
 export default Track
