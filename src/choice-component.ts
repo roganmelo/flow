@@ -37,7 +37,9 @@ class ChoiceComponent extends BranchingComponent<
   }
 
   branchesTargetsNames() {
-    return this.branches().map(branch => branch.targetTrack().name())
+    return this.branches()
+      .all()
+      .map(branch => branch.targetTrack().name())
   }
 
   conditions() {
@@ -49,17 +51,28 @@ class ChoiceComponent extends BranchingComponent<
   }
 
   next() {
-    const targetComponents = this.conditions().reduce<Component[]>(
-      (acc, condition) => {
+    const targetComponents = this.conditions()
+      .all()
+      .reduce<Component[]>((acc, condition) => {
         const firstComponent = condition.targetTrack().first()
 
         return firstComponent ? [...acc, firstComponent] : acc
-      },
-      []
-    )
+      }, [])
 
     return targetComponents
   }
+
+  // Mutations
+
+  // connect(to: string | Track | TrackName | Component<ComponentSpec>): Flow {
+  //   throw new Error('Method not implemented.')
+  // }
+
+  // disconnect(
+  //   from?: string | Track | TrackName | Component<ComponentSpec>
+  // ): Flow {
+  //   throw new Error('Method not implemented.')
+  // }
 }
 
 export default ChoiceComponent
