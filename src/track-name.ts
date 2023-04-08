@@ -11,17 +11,15 @@ class TrackName {
   static disconnectedRegex = /^disconnected-/
   static startTrackRegex = new RegExp(`^${LevelTypes.Start}$`)
   static disconnectedStartRegex = new RegExp(
-    `${TrackName.disconnectedRegex.toString()}${LevelTypes.Start}`
+    `${TrackName.disconnectedRegex.source}${LevelTypes.Start}`
   )
 
   static onProcessRegex = new RegExp(`-${LevelTypes.OnProcess}Track`)
   static onExceptionRegex = new RegExp(`-${LevelTypes.OnException}Track`)
-  static onProcessTrackRegex = new RegExp(
-    `${TrackName.onProcessRegex.toString()}$`
-  )
+  static onProcessTrackRegex = new RegExp(`${TrackName.onProcessRegex.source}$`)
 
   static onExceptionTrackRegex = new RegExp(
-    `${TrackName.onExceptionRegex.toString()}$`
+    `${TrackName.onExceptionRegex.source}$`
   )
 
   static sublevelRegex = new RegExp(
@@ -30,11 +28,12 @@ class TrackName {
 
   private readonly id: string
 
-  constructor({ id, isDisconnected, levelName }: Options) {
-    const disconnectedPrefix = isDisconnected ? 'disconnected' : ''
+  constructor({ id, isDisconnected, levelName }: Options = {}) {
+    const disconnectedPrefix = isDisconnected ? 'disconnected-' : ''
     const level = levelName || LevelTypes.Start
+    const uniqueId = isDisconnected ? `:${uuid()}` : ''
 
-    this.id = id || `${disconnectedPrefix}-${level}:${uuid()}`
+    this.id = id || `${disconnectedPrefix}${level}${uniqueId}`
   }
 
   isEquals(trackName: string | TrackName) {
@@ -95,7 +94,9 @@ class TrackName {
   parentId() {
     if (this.isStart() || this.isDisconnectedFromStart()) return undefined
 
-    const regex = new RegExp(`${TrackName.disconnectedRegex}(.+):`)
+    const regex = this.isDisconnected()
+      ? new RegExp(`${TrackName.disconnectedRegex.source}(.+):`)
+      : /^(.+)/
     const levelName = regex.exec(this.toString())?.[1]
     const id = levelName?.replace(TrackName.sublevelRegex, '')
 
