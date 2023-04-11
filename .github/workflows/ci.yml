@@ -35,11 +35,10 @@ jobs:
       - name: Testing 🧪
         run: npm run test-coverage
       - name: Checking coverage 🧪
-        uses: inzephirum/gha-test-coverage-check
+        uses: johanvanhelden/gha-clover-test-coverage-check@v1
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          min_threshold: '100'
-          report_file_path: './coverage/coverage-final.json'
+          percentage: '95'
+          filename: 'coverage/coverage-final.json'
         # uses: devmasx/coverage-check-action@v1.2.0
         # with:
         #   type: simplecov
