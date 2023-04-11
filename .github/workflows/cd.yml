@@ -25,7 +25,7 @@ jobs:
       - name: Checking style 💃
         run: npm run check
       - name: Testing 🧪
-        # run: npm run test
+        run: npm run test-coverage
         uses: devmasx/coverage-check-action@v1.2.0
         with:
           type: simplecov
