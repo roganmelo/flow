@@ -19,7 +19,8 @@ jobs:
       packages: write
     strategy:
       matrix:
-        node: ['16.19.1', '18.14.2']
+        # node: ['16.19.1', '18.14.2']
+        node: ['18.14.2']
     steps:
       - name: Checkout
         uses: actions/checkout@v3
