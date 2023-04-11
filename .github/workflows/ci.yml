@@ -4,8 +4,8 @@ on:
     types: [opened, edited, reopened]
     branches:
       - 'main'
-    paths:
-      - '**.ts'
+    # paths:
+    #   - '**.ts'
   push:
     branches:
       - '!main'
@@ -19,7 +19,8 @@ jobs:
       packages: write
     strategy:
       matrix:
-        node: ['16.19.1', '18.14.2']
+        # node: ['16.19.1', '18.14.2']
+        node: ['18.14.2']
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -34,8 +35,17 @@ jobs:
         run: npm run check
       - name: Testing 🧪
         run: npm run test-coverage
-      - name: Checking coverage 🧪
+      - name: Checking test coverage 🧪
+        id: coverage
         uses: johanvanhelden/gha-clover-test-coverage-check@v1
         with:
           percentage: '20'
           filename: 'coverage/clover.xml'
+      - name: Generate the badge SVG image
+        uses: emibcn/badge-action@v1
+        id: badge
+        with:
+          label: 'Coverage'
+          status: ${{ steps.coverage.outputs.coverage }}
+          path: ./.github/badges/test-coverage.svg
+          color: ${{ steps.coverage.outputs.coverage > 90 && 'green' || steps.coverage.outputs.coverage > 80 && 'yellow,green' || steps.coverage.outputs.coverage > 70 && 'yellow' || steps.coverage.outputs.coverage > 60 && 'orange,yellow' || steps.coverage.outputs.coverage > 50 && 'orange' || steps.coverage.outputs.coverage > 40 && 'red,orange' || steps.coverage.outputs.coverage > 30 && 'red,red,orange' || steps.coverage.outputs.coverage > 20 && 'red,red,red,orange' || 'red' }}
