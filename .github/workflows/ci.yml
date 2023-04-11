@@ -38,7 +38,7 @@ jobs:
         uses: johanvanhelden/gha-clover-test-coverage-check@v1
         with:
           percentage: '95'
-          filename: 'coverage/coverage-final.json'
+          filename: 'coverage/clover.xml'
         # uses: devmasx/coverage-check-action@v1.2.0
         # with:
         #   type: simplecov
