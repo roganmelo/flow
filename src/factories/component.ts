@@ -1,12 +1,17 @@
+import CapsuleComponent from '../capsule-component'
 import ChoiceComponent from '../choice-component'
 import CommonComponent from '../common-component'
 import Flow from '../flow'
-import isChoiceSpec from '../guards/is-choice-spec'
-import isLevelComponentSpec from '../guards/is-level-component-spec'
-import isParallelSpec from '../guards/is-parallel-spec'
+import {
+  isCapsuleSpec,
+  isChoiceSpec,
+  isLevelComponentSpec,
+  isParallelSpec
+} from '../guards'
 import LevelComponent from '../level-component'
 import ParallelComponent from '../parallel-component'
-import { ComponentSpec } from '../spec'
+
+import { ComponentSpec } from 'src/types/spec'
 
 const componentFactory = (spec: ComponentSpec, flow: Flow) => {
   if (isChoiceSpec(spec)) return new ChoiceComponent(spec, flow)
@@ -15,9 +20,7 @@ const componentFactory = (spec: ComponentSpec, flow: Flow) => {
 
   if (isLevelComponentSpec(spec)) return new LevelComponent(spec, flow)
 
-  // if (componentSpec.type === 'capsule') {
-  //   return ['capsule', componentSpec.name.replace(/\./, '')]
-  // }
+  if (isCapsuleSpec(spec)) return new CapsuleComponent(spec, flow)
 
   return new CommonComponent(spec, flow)
 }

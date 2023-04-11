@@ -1,10 +1,10 @@
-import Component from './component'
+import Component from './abstractions/component'
 import Flow from './flow'
 import LevelComponent from './level-component'
-import { FlowSpec, LevelTypes } from './spec'
 import Track from './track'
 import TrackName from './track-name'
-import { Nullable } from './types'
+import { FlowSpec, LevelTypes } from './types/spec'
+import { Nullable } from './types/utils'
 
 class Level {
   private readonly levelName: TrackName

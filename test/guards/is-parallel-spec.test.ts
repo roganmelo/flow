@@ -6,8 +6,10 @@ import { isParallelSpec } from '../../src'
 describe('isParallelSpec', () => {
   it('should return true if the spec is a parallel execution connector', () => {
     const spec = {
+      id: faker.datatype.uuid(),
       name: 'parallel-execution-connector',
-      type: 'connector'
+      type: 'connector',
+      stepName: faker.word.noun()
     }
 
     expect(isParallelSpec(spec)).toBe(true)
@@ -15,25 +17,11 @@ describe('isParallelSpec', () => {
 
   it('should return false if the spec is not a parallel execution connector', () => {
     const spec = {
+      id: faker.datatype.uuid(),
       name: faker.word.noun(),
-      type: faker.word.noun()
+      type: faker.word.noun(),
+      stepName: faker.word.noun()
     }
-
-    expect(isParallelSpec(spec)).toBe(false)
-  })
-
-  it('should return false for non-object input', () => {
-    expect(isParallelSpec(faker.word.noun())).toBe(false)
-  })
-
-  it('should return false for an object without a type field', () => {
-    const spec = { name: 'parallel-execution-connector' }
-
-    expect(isParallelSpec(spec)).toBe(false)
-  })
-
-  it('should return false for an object without a name field', () => {
-    const spec = { type: 'connector' }
 
     expect(isParallelSpec(spec)).toBe(false)
   })

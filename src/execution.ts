@@ -1,7 +1,7 @@
-import Branch from './branch'
+import Branch from './abstractions/branch'
 import Flow from './flow'
 import ParallelComponent from './parallel-component'
-import { ExecutionSpec } from './spec'
+import { ExecutionSpec } from './types/spec'
 
 class Execution extends Branch<ExecutionSpec> {
   constructor(

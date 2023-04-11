@@ -1,5 +1,6 @@
-import uuid from 'src/helpers/uuid'
-import { LevelTypes } from 'src/spec'
+import { LevelTypes } from './types/spec'
+
+import { uuid } from 'src/helpers'
 
 type Options = {
   id?: string

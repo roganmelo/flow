@@ -1,9 +1,9 @@
-import BranchingComponent from './branching-component'
-import Component from './component'
+import BranchingComponent from './abstractions/branching-component'
+import Component from './abstractions/component'
 import Condition from './condition'
 import Conditions from './conditions'
 import Flow from './flow'
-import { ChoiceSpec, ConditionSpec, ConditionTypes } from './spec'
+import { ChoiceSpec, ConditionSpec, ConditionTypes } from './types/spec'
 
 class ChoiceComponent extends BranchingComponent<
   ChoiceSpec,

@@ -1,8 +1,8 @@
-import Branches from './branches'
+import Branches from './abstractions/branches'
 import ChoiceComponent from './choice-component'
 import Condition from './condition'
 import Flow from './flow'
-import { ConditionSpec } from './spec'
+import { ConditionSpec } from './types/spec'
 
 class Conditions extends Branches<ConditionSpec, Condition> {
   constructor(choice: ChoiceComponent, conditions: Condition[], flow: Flow) {

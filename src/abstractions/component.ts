@@ -1,10 +1,11 @@
-import ChoiceComponent from './choice-component'
-import Flow from './flow'
-import uuid from './helpers/uuid'
-import ParallelComponent from './parallel-component'
-import { ComponentSpec } from './spec'
-import Track from './track'
-import { Optional, Nullable } from './types'
+import ChoiceComponent from '../choice-component'
+import Flow from '../flow'
+import { uuid } from '../helpers'
+import ParallelComponent from '../parallel-component'
+import Track from '../track'
+
+import { ComponentSpec } from 'src/types/spec'
+import { Nullable, Optional } from 'src/types/utils'
 
 abstract class Component<
   ComponentSpecType extends ComponentSpec = ComponentSpec

@@ -1,10 +1,10 @@
-import Component from './component'
+import Component from './abstractions/component'
 import Flow from './flow'
 import Level from './level'
-import { FlowSpec, LevelComponentSpec, LevelTypes } from './spec'
 import Track from './track'
 import TrackName from './track-name'
-import { Nullable } from './types'
+import { FlowSpec, LevelComponentSpec, LevelTypes } from './types/spec'
+import { Nullable } from './types/utils'
 
 class LevelComponent extends Component<LevelComponentSpec> {
   constructor(spec: LevelComponentSpec, flow: Flow) {

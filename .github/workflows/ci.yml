@@ -33,4 +33,9 @@ jobs:
       - name: Checking style 💃
         run: npm run check
       - name: Testing 🧪
-        run: npm run test
+        run: npm run test-coverage
+      - name: Checking coverage 🧪
+        uses: johanvanhelden/gha-clover-test-coverage-check@v1
+        with:
+          percentage: '20'
+          filename: 'coverage/clover.xml'
