@@ -35,5 +35,11 @@ module.exports = defineConfig({
         return fileName[extension]
       }
     }
+  },
+  test: {
+    coverage: {
+      all: true,
+      include: ['src/**/*.ts']
+    }
   }
 })

@@ -6,6 +6,9 @@ import {
 
 const isLevelComponentSpec = (
   spec: ComponentSpec
-): spec is LevelComponentSpec => spec.name?.toLowerCase() in LevelComponentTypes
+): spec is LevelComponentSpec =>
+  Object.values(LevelComponentTypes).includes(
+    spec.name?.toLowerCase() as LevelComponentTypes
+  )
 
 export default isLevelComponentSpec
