@@ -2,7 +2,7 @@ import {
   ComponentSpec,
   LevelComponentSpec,
   LevelComponentTypes
-} from 'src/spec'
+} from 'src/types/spec'
 
 const isLevelComponentSpec = (
   spec: ComponentSpec

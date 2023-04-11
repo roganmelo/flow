@@ -1,9 +1,9 @@
-import Component from './component'
+import Component from './abstractions/component'
 import Flow from './flow'
-import { ComponentSpec } from './spec'
-import Track from './track'
-import TrackName from './track-name'
-import { Nullable } from './types'
+// import Track from './track'
+// import TrackName from './track-name'
+import { ComponentSpec } from './types/spec'
+import { Nullable } from './types/utils'
 
 class CommonComponent extends Component<ComponentSpec> {
   constructor(spec: ComponentSpec, flow: Flow) {
@@ -14,9 +14,9 @@ class CommonComponent extends Component<ComponentSpec> {
     return this.track().at(this.index() + 1)
   }
 
-  connect(to: Component | TrackName | Track): Flow {
-    return this.track().connect(to)
-  }
+  // connect(to: Component | TrackName | Track): Flow {
+  //   return this.track().connect(to)
+  // }
 
   // disconnect(): Flow {
   //   const next = this.next()

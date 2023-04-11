@@ -5,7 +5,7 @@ type Container = {
 type Arg = string | { toString?: () => string }
 
 const cache =
-  (cacheKeyTemplate: string) =>
+  (cacheKeyTemplate?: string) =>
   (_: unknown, propertyKey: string, descriptor: PropertyDescriptor) => {
     const method = descriptor.value
     const cachedMethod = function (this: Container, ...args: Arg[]) {
@@ -16,7 +16,7 @@ const cache =
           return acc.replace(`{${index}}`, currentArg)
         }
 
-        if (currentArg.toString) {
+        if (currentArg?.toString) {
           return acc.replace(`{${index}}`, currentArg.toString())
         }
 

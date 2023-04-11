@@ -1,7 +1,7 @@
-import Branch from './branch'
+import Branch from './abstractions/branch'
 import ChoiceComponent from './choice-component'
 import Flow from './flow'
-import { ConditionSpec } from './spec'
+import { ConditionSpec } from './types/spec'
 
 class Condition extends Branch<ConditionSpec> {
   constructor(

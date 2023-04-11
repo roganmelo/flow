@@ -1,9 +1,9 @@
-import BranchingComponent from './branching-component'
-import Component from './component'
+import BranchingComponent from './abstractions/branching-component'
+import Component from './abstractions/component'
 import Execution from './execution'
 import Executions from './executions'
 import Flow from './flow'
-import { ExecutionSpec, ParallelSpec } from './spec'
+import { ExecutionSpec, ParallelSpec } from './types/spec'
 
 class ParallelComponent extends BranchingComponent<
   ParallelSpec,

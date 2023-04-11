@@ -1,15 +1,15 @@
+import Component from './abstractions/component'
 import ChoiceComponent from './choice-component'
-import Component from './component'
 import Condition from './condition'
 import Execution from './execution'
-import componentFactory from './factories/component'
+import { componentFactory } from './factories'
 import Flow from './flow'
 import Level from './level'
 import LevelComponent from './level-component'
 import ParallelComponent from './parallel-component'
-import { TrackSpec } from './spec'
 import TrackName from './track-name'
-import { Nullable } from './types'
+import { TrackSpec } from './types/spec'
+import { Nullable } from './types/utils'
 
 class Track {
   constructor(

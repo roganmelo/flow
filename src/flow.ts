@@ -1,14 +1,11 @@
-// import lodashOmit from 'lodash.omit'
-// import lodashUpdate from 'lodash.update'
-
-import Component from './component'
-// import cache from './helpers/cache'
+import Component from './abstractions/component'
+// import { cache, omit, update } from './helpers'
 import Level from './level'
 import LevelComponent from './level-component'
-import { FlowSpec, LevelTypes } from './spec'
 import Track from './track'
 import TrackName from './track-name'
-import { Nullable } from './types'
+import { FlowSpec, LevelTypes } from './types/spec'
+import { Nullable } from './types/utils'
 
 class Flow {
   constructor(private readonly flowSpec: FlowSpec) {}

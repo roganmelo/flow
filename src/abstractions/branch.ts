@@ -1,7 +1,8 @@
 import Component from './component'
-import Flow from './flow'
-import { BranchSpec } from './spec'
-import Track from './track'
+import Flow from '../flow'
+import Track from '../track'
+
+import { BranchSpec } from 'src/types/spec'
 
 abstract class Branch<BranchSpecType extends BranchSpec> {
   constructor(

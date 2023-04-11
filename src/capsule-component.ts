@@ -1,7 +1,7 @@
-import Component from './component'
+import Component from './abstractions/component'
 import Flow from './flow'
-import { CapsuleSpec } from './spec'
-import { Nullable } from './types'
+import { CapsuleSpec } from './types/spec'
+import { Nullable } from './types/utils'
 
 class CapsuleComponent extends Component {
   constructor(spec: CapsuleSpec, flow: Flow) {

@@ -1,9 +1,10 @@
 import Branch from './branch'
 import Branches from './branches'
 import Component from './component'
-import Flow from './flow'
-import { BranchSpec, ComponentSpec } from './spec'
-import TrackName from './track-name'
+import Flow from '../flow'
+import TrackName from '../track-name'
+
+import { BranchSpec, ComponentSpec } from 'src/types/spec'
 
 abstract class BranchingComponent<
   SpecType extends ComponentSpec,
