@@ -35,9 +35,14 @@ jobs:
       - name: Testing 🧪
         run: npm run test-coverage
       - name: Checking coverage 🧪
-        uses: devmasx/coverage-check-action@v1.2.0
+        uses: inzephirum/gha-test-coverage-check
         with:
-          type: simplecov
-          result_path: coverage/coverage-final.json
-          min_coverage: 90
-          token: ${{ github.token }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          min_threshold: '100'
+          report_file_path: './coverage/coverage-final.json'
+        # uses: devmasx/coverage-check-action@v1.2.0
+        # with:
+        #   type: simplecov
+        #   result_path: coverage/coverage-final.json
+        #   min_coverage: 90
+        #   token: ${{ github.token }}
