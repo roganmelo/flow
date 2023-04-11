@@ -4,8 +4,8 @@ on:
     types: [opened, edited, reopened]
     branches:
       - 'main'
-    paths:
-      - '**.ts'
+    # paths:
+    #   - '**.ts'
   push:
     branches:
       - '!main'
