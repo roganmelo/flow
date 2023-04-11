@@ -2,8 +2,6 @@ import { faker } from '@faker-js/faker'
 import { describe, it, expect } from 'vitest'
 
 import { LevelTypes, TrackName } from '../src'
-// import { LevelTypes } from '../src/spec'
-// import TrackName from '../src/track-name'
 
 describe('TrackName', () => {
   describe('constructor', () => {
